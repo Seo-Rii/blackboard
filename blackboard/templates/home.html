@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>BlackBoard</title>
+    {% load static %}
+    <link href="{% static 'css/common.css' %}" rel="stylesheet">
+    <link href="{% static 'css/home.css' %}" rel="stylesheet">
+    <link href="https://unpkg.com/material-components-web@8.0.0/dist/material-components-web.min.css"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@8.0.0/dist/material-components-web.min.js"></script>
+    <script src="{% static 'js/home.js' %}"></script>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+</head>
+<body>
+<aside class="mdc-drawer mdc-drawer--modal">
+    <div class="mdc-drawer__content">
+        <nav class="mdc-list">
+            <a class="mdc-list-item" href="{% url 'home' %}" aria-current="page" tabindex="0">
+                <span class="mdc-list-item__ripple"></span>
+                <i class="material-icons mdc-list-item__graphic" aria-hidden="true">inbox</i>
+                <span class="mdc-list-item__text">메인</span>
+            </a>
+            <a class="mdc-list-item" href="{% url 'room:create' %}">
+                <span class="mdc-list-item__ripple"></span>
+                <i class="material-icons mdc-list-item__graphic" aria-hidden="true">send</i>
+                <span class="mdc-list-item__text">새 블랙보드 만들기</span>
+            </a>
+        </nav>
+    </div>
+</aside>
+<div class="mdc-drawer-scrim"></div>
+<header class="mdc-top-app-bar mdc-top-app-bar--dense">
+    <div class="mdc-top-app-bar__row">
+        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+            <button aria-label="Open navigation menu" onclick="drawer.open=true"
+                    class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" tabindex="0">menu
+            </button>
+            <a id="logo-a" href="{% url 'home' %}"><img id="logo" src="{% static 'res/logo_white.png' %}"></a>
+            <span class="mdc-top-app-bar__title" id="title">BlackBoard</span>
+        </section>
+        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar"></section>
+    </div>
+</header>
+<main>
+    <div>
+        <a href="{% url 'room:create' %}">
+            <div class="card"
+                 style="background: url({% static 'res/back1.png' %});background-repeat: no-repeat;text-align: right;margin:50px;width:calc(50% - 160px);float:left;">
+                <h1>새 블랙보드 만들기</h1>
+                <p>새로운 공유 블랙보드를 만드세요!</p>
+            </div>
+        </a>
+        <a onclick="shareDialog.open()">
+            <div class="card"
+                 style="background: url({% static 'res/back1.png' %});background-repeat: no-repeat;text-align: right;margin:50px;width:calc(50% - 160px);float:left;cursor: pointer;">
+                <h1>다른 블랙보드에 참여하기</h1>
+                <p>공유 블랙보드에 참여하세요!</p>
+            </div>
+        </a>
+    </div>
+    <h1>최근 연 블랙보드</h1>
+    <div id="recent"></div>
+    <p id="no-blackboard">최근 연 블랙보드가 없어요!</p>
+</main>
+<div class="mdc-dialog" id="share-dialog">
+    <div class="mdc-dialog__container">
+        <div aria-describedby="my-dialog-content"
+             aria-labelledby="my-dialog-title"
+             aria-modal="true"
+             class="mdc-dialog__surface"
+             role="alertdialog">
+            <div class="mdc-dialog__content" id="my-dialog-content">
+                <br>
+                <h1>공유하기</h1>
+                <p>참여할 블랙보드의 ID를 입력하세요!</p>
+                <br>
+                <div class="text-container">
+                    <label class="mdc-text-field mdc-text-field--outlined" style="width: 100%;">
+                  <span class="mdc-notched-outline">
+                        <span class="mdc-notched-outline__leading"></span>
+                        <span class="mdc-notched-outline__notch">
+                          <span class="mdc-floating-label">링크</span>
+                        </span>
+                        <span class="mdc-notched-outline__trailing"></span>
+                  </span>
+                        <input aria-labelledby="my-label-id" class="mdc-text-field__input" id="shareUrl" type="text">
+                    </label>
+                </div>
+            </div>
+            <div class="mdc-dialog__actions">
+                <button class="mdc-button mdc-dialog__button ripple" data-mdc-dialog-action="cancel" type="button"
+                        onclick="join()">
+                    <div class="mdc-button__ripple"></div>
+                    <span class="mdc-button__label">참여</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="mdc-dialog__scrim"></div>
+</div>
+<div class="mdc-snackbar" id="snackbar">
+    <div aria-relevant="additions" class="mdc-snackbar__surface" role="status">
+        <div aria-atomic="false" class="mdc-snackbar__label" id="snackbar-text"></div>
+        <div aria-atomic="true" class="mdc-snackbar__actions">
+            <button class="mdc-button mdc-snackbar__action ripple" type="button">
+                <div class="mdc-button__ripple"></div>
+                <span class="mdc-button__label" style="color: var(--mdc-theme-primary) !important;">닫기</span>
+            </button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

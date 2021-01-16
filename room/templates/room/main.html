@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>BlackBoard</title>
+    <script>
+        let pointLi, socketId =
+        {{ socketid }}
+        try {
+            pointLi = [{% for li in r.line_set.all %}{{ li|safe }}, {% endfor %}]
+        } catch (e) {
+            pointLi = []
+        }
+    </script>
+    {% load static %}
+    <link href="{% static 'css/common.css' %}" rel="stylesheet">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    <link href="https://unpkg.com/material-components-web@8.0.0/dist/material-components-web.min.css"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@8.0.0/dist/material-components-web.min.js"></script>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <script src="{% static 'js/canvas.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/color2filter.js' %}"></script>
+</head>
+<body>
+<aside class="mdc-drawer mdc-drawer--modal">
+    <div class="mdc-drawer__content">
+        <nav class="mdc-list">
+            <a class="mdc-list-item" href="{% url 'home' %}" aria-current="page" tabindex="0">
+                <span class="mdc-list-item__ripple"></span>
+                <i class="material-icons mdc-list-item__graphic" aria-hidden="true">inbox</i>
+                <span class="mdc-list-item__text">메인</span>
+            </a>
+            <a class="mdc-list-item" href="{% url 'room:create' %}">
+                <span class="mdc-list-item__ripple"></span>
+                <i class="material-icons mdc-list-item__graphic" aria-hidden="true">send</i>
+                <span class="mdc-list-item__text">새 블랙보드 만들기</span>
+            </a>
+        </nav>
+    </div>
+</aside>
+<div class="mdc-drawer-scrim"></div>
+<header class="mdc-top-app-bar mdc-top-app-bar--dense">
+    <div class="mdc-top-app-bar__row">
+        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+            <button aria-label="Open navigation menu" onclick="drawer.open=true"
+                    class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu
+            </button>
+            <a id="logo-a" href="{% url 'home' %}"><img id="logo" src="{% static 'res/logo_white.png' %}"></a>
+            <span class="mdc-top-app-bar__title" id="title"></span>
+            <input id="title-input" style="display: none" type="text" value="{{ r.name }}">
+        </section>
+        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
+            <button aria-label="Sync Finished" class="material-icons mdc-top-app-bar__action-item mdc-icon-button"
+                    id="synced">cloud_done
+            </button>
+            <svg class="spinner" width="65px" height="65px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg"
+                 id="syncing">
+                <circle class="circle" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33"
+                        r="10"></circle>
+            </svg>
+            <button aria-label="Share" class="material-icons mdc-top-app-bar__action-item mdc-icon-button"
+                    onclick="share()">share
+            </button>
+            <button aria-label="Options"
+                    class="material-icons mdc-top-app-bar__action-item mdc-icon-button mdc-menu-surface--anchor"
+                    onclick="menu.open = true">more_vert
+                <div class="mdc-menu mdc-menu-surface">
+                    <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
+                        <li class="mdc-list-item" role="menuitem" onclick="resetDialog.open()">
+                            <span class="mdc-list-item__ripple"></span>
+                            <span class="mdc-list-item__text">이 블랙보드 초기화</span>
+                        </li>
+                        <li class="mdc-list-item" role="menuitem" onclick="infoDialog.open()">
+                            <span class="mdc-list-item__ripple"></span>
+                            <span class="mdc-list-item__text">정보</span>
+                        </li>
+                    </ul>
+                </div>
+            </button>
+        </section>
+    </div>
+</header>
+<canvas id="drawCanv"></canvas>
+<canvas id="mainCanv"></canvas>
+<div class="closed" id="controls">
+    <div id="control-container">
+        <div class="pen" id="pen" onclick="selectPen(0)"></div>
+        <div class="pen" id="marker" onclick="selectPen(1)"></div>
+        <div class="pen" id="eraser" onclick="selectPen(2)"></div>
+        <div id="thick">
+            <div id="thick-container">
+                <div onclick="selectThick(0)" style="width:10px;height: 10px;"></div>
+                <div onclick="selectThick(1)" style="width:13px;height: 13px;"></div>
+                <div onclick="selectThick(2)" style="width:15px;height: 15px;"></div>
+                <div onclick="selectThick(3)" style="width:20px;height: 20px;"></div>
+            </div>
+        </div>
+        <div id="color">
+            <div id="color-container">
+                <div onclick="selectColor(0)" style="background: #000000;border-color: #000000;"></div>
+                <div onclick="selectColor(1)" style="background: #f55d49;border-color: #f55d49;"></div>
+                <div onclick="selectColor(2)" style="background: #f5b049;border-color: #f5b049;"></div>
+                <div onclick="selectColor(3)" style="background: #ede96f;border-color: #ede96f;"></div>
+                <div onclick="selectColor(4)" style="background: #85e68a;border-color: #85e68a;"></div>
+                <div onclick="selectColor(5)" style="background: #87d9ed;border-color: #87d9ed;"></div>
+                <div onclick="selectColor(6)" style="background: #4d5ce3;border-color: #4d5ce3;"></div>
+                <div onclick="selectColor(7)" style="background: #b96fed;border-color: #b96fed;"></div>
+                <div onclick="selectColor(8)" style="background: #8a8a8a;border-color: #8a8a8a;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="mdc-dialog" id="share-dialog">
+    <div class="mdc-dialog__container">
+        <div aria-describedby="my-dialog-content"
+             aria-labelledby="my-dialog-title"
+             aria-modal="true"
+             class="mdc-dialog__surface"
+             role="alertdialog">
+            <div class="mdc-dialog__content" id="my-dialog-content">
+                <br>
+                <h1>공유하기</h1>
+                <p>아래 링크로 들어가면 공동 작업을 시작할 수 있어요!</p>
+                <br>
+                <div class="text-container">
+                    <label class="mdc-text-field mdc-text-field--outlined" style="width: 100%;">
+                  <span class="mdc-notched-outline">
+                        <span class="mdc-notched-outline__leading"></span>
+                        <span class="mdc-notched-outline__notch">
+                          <span class="mdc-floating-label">링크</span>
+                        </span>
+                        <span class="mdc-notched-outline__trailing"></span>
+                  </span>
+                        <input aria-labelledby="my-label-id" class="mdc-text-field__input" id="shareUrl" type="text">
+                    </label>
+                </div>
+                <br>
+                <p>또는 아래 코드를 메인에서 입력하세요!</p>
+                <h1>{{ socketid }}</h1>
+            </div>
+            <div class="mdc-dialog__actions">
+                <button class="mdc-button mdc-dialog__button ripple" data-mdc-dialog-action="cancel" type="button">
+                    <div class="mdc-button__ripple"></div>
+                    <span class="mdc-button__label">닫기</span>
+                </button>
+                <button class="mdc-button mdc-dialog__button ripple" onclick="copyShareUrl()" type="button">
+                    <div class="mdc-button__ripple"></div>
+                    <span class="mdc-button__label">복사</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="mdc-dialog__scrim"></div>
+</div>
+<div class="mdc-dialog" id="info-dialog">
+    <div class="mdc-dialog__container">
+        <div aria-describedby="my-dialog-content"
+             aria-labelledby="my-dialog-title"
+             aria-modal="true"
+             class="mdc-dialog__surface"
+             role="alertdialog">
+            <div class="mdc-dialog__content" id="my-dialog-content">
+                <img src="{% static 'res/logo.png' %}" width="100">
+                <h1>Blackboard</h1>
+                <p>2020 인천과학예술영재학교 심우용, 유선혜, 이서현. All right reserved.</p>
+            </div>
+            <div class="mdc-dialog__actions">
+                <button class="mdc-button mdc-dialog__button ripple" data-mdc-dialog-action="cancel" type="button">
+                    <div class="mdc-button__ripple"></div>
+                    <span class="mdc-button__label">닫기</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="mdc-dialog__scrim"></div>
+</div>
+<div class="mdc-dialog" id="reset-dialog">
+    <div class="mdc-dialog__container">
+        <div aria-describedby="my-dialog-content"
+             aria-labelledby="my-dialog-title"
+             aria-modal="true"
+             class="mdc-dialog__surface"
+             role="alertdialog">
+            <div class="mdc-dialog__content" id="my-dialog-content">
+                <br>
+                <h1>정말 초기화할까요?</h1>
+                <p>모든 내용이 사라집니다!</p>
+            </div>
+            <div class="mdc-dialog__actions">
+                <button class="mdc-button mdc-dialog__button ripple" onclick="reset()" type="button">
+                    <div class="mdc-button__ripple"></div>
+                    <span class="mdc-button__label">초기화</span>
+                </button>
+                <button class="mdc-button mdc-dialog__button ripple" data-mdc-dialog-action="cancel" type="button">
+                    <div class="mdc-button__ripple"></div>
+                    <span class="mdc-button__label">취소</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="mdc-dialog__scrim"></div>
+</div>
+<div class="mdc-snackbar" id="snackbar">
+    <div aria-relevant="additions" class="mdc-snackbar__surface" role="status">
+        <div aria-atomic="false" class="mdc-snackbar__label" id="snackbar-text"></div>
+        <div aria-atomic="true" class="mdc-snackbar__actions">
+            <button class="mdc-button mdc-snackbar__action ripple" type="button">
+                <div class="mdc-button__ripple"></div>
+                <span class="mdc-button__label" style="color: var(--mdc-theme-primary) !important;">닫기</span>
+            </button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

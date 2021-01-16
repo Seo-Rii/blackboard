@@ -1,0 +1,170 @@
+@import url(https://fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+:root {
+    --control-container-size: 600px;
+}
+
+#logo-a {
+    height: calc(100% - 25px);
+}
+
+#logo {
+    height: 100%;
+}
+
+#mainCanv {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+}
+
+#drawCanv {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+}
+
+#controls {
+    position: fixed;
+    bottom: 50px;
+    left: 50px;
+    box-shadow: 13px 13px 26px #00000033, -13px -13px 26px #00000033;
+    border-radius: 50px;
+    background: #ffffff;
+    overflow: hidden;
+    opacity: 1;
+    z-index: 2;
+}
+
+#controls.hidden {
+    transition: width 0.5s cubic-bezier(0.7, 0, 0.3, 1) 0.05s, height 0.5s cubic-bezier(0.7, 0, 0.3, 1) 0s;
+    width: 100px;
+    height: 100px;
+    opacity: 0;
+}
+
+#controls.closed {
+    transition: width 0.5s cubic-bezier(0.7, 0, 0.3, 1) 0.05s, height 0.5s cubic-bezier(0.7, 0, 0.3, 1) 0s;
+    width: 100px;
+    height: 100px;
+    opacity: 1;
+}
+
+#controls.open {
+    transition: width 0.5s cubic-bezier(0.7, 0, 0.3, 1) 0s, height 0.5s cubic-bezier(0.7, 0, 0.3, 1) 0.05s;
+    width: var(--control-container-size);
+    height: 200px;
+    opacity: 1;
+}
+
+#control-container {
+    transition: all 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+    width: var(--control-container-size);
+    height: 100%;
+    position: relative;
+}
+
+#control-container > div {
+    float: left;
+}
+
+#control-container > div.pen {
+    transition: margin-top 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+    margin-top: 50px;
+}
+
+#control-container > div.pen.selected {
+    margin-top: -10px;
+}
+
+#pen {
+    margin-left: 10px;
+    background: url(../res/img/pen.png) no-repeat center 15px;
+    background-size: 200px auto;
+    width: 100px;
+    height: 100%;
+}
+
+#marker {
+    background: url(../res/img/marker.svg) no-repeat center 27px;
+    background-size: 25px auto;
+    width: 100px;
+    height: 100%;
+}
+
+#eraser {
+    background: url(../res/img/eraser.svg) no-repeat center 30px;
+    background-size: 50px auto;
+    width: 100px;
+    margin-left: 10px;
+    height: 100%;
+}
+
+#thick {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 200px;
+    margin-left: 30px;
+}
+
+#thick-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#thick-container > div {
+    transition: margin 0.5s cubic-bezier(0.7, 0, 0.3, 1), padding 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+    background: black;
+    border-radius: 100px;
+    margin: 7px;
+    border: 2px solid black;
+    background-clip: content-box;
+}
+
+#thick-container > div.selected {
+    margin: 2px;
+    padding: 5px;
+}
+
+#title-input {
+    outline: none;
+    border: none;
+    background: transparent;
+    padding: 5px;
+    font-size: 20px;
+    color: white;
+    margin-top: -4px;
+    margin-left: 7px;
+    font-family: 'Roboto', sans-serif;
+}
+
+#color {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 200px;
+    margin-left: 30px;
+}
+
+#color-container {
+    display: grid;
+    grid-template-columns: 33.33% 33.33% 33.33%;
+}
+
+#color-container > div {
+    transition: margin 0.5s cubic-bezier(0.7, 0, 0.3, 1), padding 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+    width: 30px;
+    height: 30px;
+    border-radius: 100px;
+    margin: 7px;
+    border: 2px solid black;
+    background-clip: content-box !important;
+}
+
+#color-container > div.selected {
+    margin: 2px;
+    padding: 5px;
+}

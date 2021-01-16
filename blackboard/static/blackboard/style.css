@@ -1,0 +1,25 @@
+body{margin: 0px;}
+h1 {
+    text-align: center;
+    font-size: 80px;
+    border-bottom: 1px solid gray;
+    margin: 0px;
+    padding: 0px;
+}
+#content {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    font-size: 30px;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+li {margin: 40px;}
+footer {
+    background-color: #FFF8DC;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    font-size: 10px;
+}
+body {
+    margin: 0px;
+}
